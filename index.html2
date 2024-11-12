@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Transfer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      color: #4caf50;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: black;
+      overflow: hidden;
+    }
+    .container {
+      text-align: center;
+      z-index: 1;
+    }
+    .message {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      color: red;
+    }
+    .progress-bar {
+      width: 300px;
+      height: 20px;
+      background-color: #333;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress {
+      height: 100%;
+      width: 0;
+      background-color: #4caf50;
+      transition: width 0.5s ease;
+    }
+    #done-icon {
+      display: none;
+      font-size: 2em;
+      margin-top: 20px;
+      color: red;
+    }
+    .prompt {
+      color: white;
+      background-color: #333;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <!-- Prompt to proceed with checkbox -->
+  <div class="prompt" id="prompt">
+    <p>To proceed with data transfer, please check the box below.</p>
+    <input type="checkbox" id="proceedCheckbox"> I understand and want to proceed
+    <br><br>
+    <button onclick="startTransfer()" disabled id="startButton">Start</button>
+  </div>
+
+  <div class="container" style="display:none;" id="transferContainer">
+    <div class="message" id="status">Initializing...</div>
+    <div class="progress-bar">
+      <div class="progress" id="progress"></div>
+    </div>
+    <div id="done-icon">✔️</div>
+  </div>
+
+  <script>
+    // Enable start button when checkbox is checked
+    const checkbox = document.getElementById('proceedCheckbox');
+    const startButton = document.getElementById('startButton');
+    checkbox.addEventListener('change', function() {
+      startButton.disabled = !checkbox.checked;
+    });
+
+    function startTransfer() {
+      document.getElementById("prompt").style.display = "none";
+      document.getElementById("transferContainer").style.display = "block";
+      updateProgress();
+    }
+
+    // Progress bar and messages with slight delay
+    let progress = 0;
+    const progressBar = document.getElementById('progress');
+    const statusText = document.getElementById('status');
+    const doneIcon = document.getElementById('done-icon');
+    const messages = [
+      "DATA TRANSFER",
+      "WHATSAPP",
+      "INSTAGRAM",
+      "PICTURES",
+      "MESSAGES",
+      "FACEBOOK",
+      "FILES"
+    ];
+    
+    function updateProgress() {
+      if (progress < 100) {
+        progress += 20;
+        progressBar.style.width = progress + '%';
+        statusText.textContent = messages[Math.floor(progress / 20) % messages.length];
+      } else {
+        clearInterval(progressInterval);
+        statusText.textContent = "Transfer Complete";
+        doneIcon.style.display = 'block';
+
+        // Open multiple tabs, with the final tab displaying the data transfer completion message
+        setTimeout(() => {
+          openTabs();
+        }, 1000);
+      }
+    }
+
+    // Update progress every 0.7 seconds
+    const progressInterval = setInterval(updateProgress, 700);
+
+    // Function to open multiple tabs
+    function openTabs() {
+      const urls = [
+        'data:text/html,<h1>DATA TRANSFER</h1>',
+        'data:text/html,<h1>WHATSAPP</h1>',
+        'data:text/html,<h1>INSTAGRAM</h1>',
+        'data:text/html,<h1>PICTURES</h1>',
+        'data:text/html,<h1>MESSAGES</h1>',
+        'data:text/html,<h1>FACEBOOK</h1>',
+        'data:text/html,<h1>FILES</h1>',
+        'data:text/html,<h1>DATA TRANSFER COMPLETE</h1>'
+      ];
+      const tabs = urls.map(url => window.open(url));
+
+      // Automatically close all tabs after 3 seconds
+      setTimeout(() => {
+        tabs.forEach(tab => tab.close());
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
